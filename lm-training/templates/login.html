@@ -1,0 +1,189 @@
+{% extends "page.html" %}
+{% if announcement_login %}
+  {% set announcement = announcement_login %}
+{% endif %}
+
+{% block login_widget %}
+{% endblock %}
+
+{% block main %}
+
+{% block login %}
+
+<head>
+<style>
+#login-main img {
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+}
+
+#login-main p {
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+}
+
+#login-main form {
+    display: table;
+    vertical-align: middle;
+    margin: auto auto 5% auto;
+    width: 350px;
+    font-size: large;
+}
+a:link{color:white;}
+a:visited{color:grey;}
+</style>
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $("#agree").click(function(){
+    $('#sign-in').attr('disabled', !this.checked)
+  });
+});
+</script>
+<script src="https://www.recaptcha.net/recaptcha/api.js" async defer></script>
+<script>
+function onRecaptchaSuccess() {
+  var T = document.getElementById("sign-in-div");
+  T.style.display = "";}
+</script> 
+</head>
+
+<div id="login-main" class="container">
+<div class="intro" align="center">
+  <span>
+    Try Data-Juicer in your browser in a JupyterLab.
+    <a class="github-button" href="https://github.com/alibaba/Data-Juicer" data-color-scheme="no-preference: dark; light: dark_high_contrast; dark: light;" data-icon="octicon-star" data-show-count="true" aria-label="Star alibaba/Data-Juicer on GitHub">Star</a>
+  </span>
+  <!--
+  <img class="damo" src="https://img.alicdn.com/imgextra/i4/O1CN01kcSRaw1rj4rAa6HM2_!!6000000005666-2-tps-1335-191.png" width="459.25px" height="65.71px"></img>
+  <img class="demo" src="https://img.alicdn.com/imgextra/i1/O1CN01X2gbqT23Edvcinrbe_!!6000000007224-1-tps-500-330.gif"></img>
+  -->
+  <div class="detail" align="left">
+    <span>
+      <b>To try the Data-Juicer Playground, you can simply log in and get started with your Github account. Please note:</b>
+      <ul>
+        <li>Each logged-in user will be assigned with a JupyterHub session, in which you can quickly complete the procedures of data processing, model training and evaluation using the pre-built Data-Juicer environments.</li>
+        <li>每个登录用户都会分配一个 JupyterHub 会话，您可以在其中使用预构建的 Data-Juicer 环境快速完成数据处理、模型训练和评估。</li>
+        <li>From each JupyterLab session, you can access a container with a resource limit of 2 CPU cores and 30GB memory. The session will automatically expire after 60 minutes (or 20 minutes without any active user interactions). <b>All files will NOT be saved!</b></li>
+        <li>从每个 JupyterLab 会话中，您可以访问资源限制为 2 个 CPU 核心和 30GB 内存的容器。 会话将在 30 分钟后自动过期。 <b>所有文件都不会被保存！</b></li>
+        <li>The service provided by Data-Juicer Playground is strictly limited to the trial of Data-Juicer ONLY. Any other use is strictly prohibited. Your use of the service will be at your own risk. And we provide no warranties to the service.</li>
+        <li>Data-Juicer Playground提供的服务仅限于Data-Juicer试用和竞赛预览，严禁其它用途。 您使用该服务的风险将由您自行承担。</li>
+      </ul>
+    </span>
+  </div>
+{% block login_container %}
+{% if custom_html %}
+{{ custom_html | safe }}
+{% elif login_service %}
+
+
+<!-- Recaptcha -->
+<div
+  class="g-recaptcha"
+  data-sitekey="6LezamIhAAAAAJVXviV10OhHdh9dmELdWfIJvjVG"
+  data-callback="onRecaptchaSuccess"
+  data-expired-callback="onRecaptchaResponseExpiry"
+  data-error-callback="onRecaptchaError"
+></div>
+
+<div class "service-checkbox">
+  <input type="checkbox" id="agree" value="" />
+  <span style="color:#A9A9A9;">I have read and agree to all of the above.</span> 
+</div>
+
+<div class="service-login" align="center" style="display:none" id="sign-in-div">
+  <a id= "sign-in" role="button" class='btn btn-jupyter btn-lg' disabled href='{{authenticator_login_url}}'>
+    Sign in with {{login_service}} and star Data-Juicer
+  </a>
+</div>
+
+{% else %}
+<form action="{{login_url}}?next={{next}}" method="post" role="form">
+  <div class="auth-form-header">
+    Sign in
+  </div>
+  <div class='auth-form-body'>
+
+    <p id='insecure-login-warning' class='hidden'>
+    Warning: JupyterHub seems to be served over an unsecured HTTP connection.
+    We strongly recommend enabling HTTPS for JupyterHub.
+    </p>
+
+    {% if login_error %}
+    <p class="login_error">
+      {{login_error}}
+    </p>
+    {% endif %}
+    <label for="username_input">Username:</label>
+    <input
+      id="username_input"
+      type="text"
+      autocapitalize="off"
+      autocorrect="off"
+      class="form-control"
+      name="username"
+      val="{{username}}"
+      tabindex="1"
+      autofocus="autofocus"
+    />
+    <label for='password_input'>Password:</label>
+    <input
+      type="password"
+      class="form-control"
+      name="password"
+      id="password_input"
+      tabindex="2"
+    />
+
+    <div class="feedback-container">
+      <input
+        id="login_submit"
+        type="submit"
+        class='btn btn-jupyter'
+        value='Sign in'
+        tabindex="3"
+        />
+      <div class="feedback-widget hidden">
+        <i class="fa fa-spinner"></i>
+      </div>
+    </div>
+
+    {% block login_terms %}
+    {% if login_term_url %}
+    <div id="login_terms" class="login_terms">
+    <input type="checkbox" id="login_terms_checkbox" name="login_terms_checkbox" required />
+    {% block login_terms_text %} {# allow overriding the text #}
+    By logging into the platform you accept the <a href="{{ login_term_url }}">terms and conditions</a>.
+    {% endblock login_terms_text %}
+    </div>
+    {% endif %}
+    {% endblock login_terms %}
+
+  </div>
+</form>
+{% endif %}
+{% endblock login_container %}
+</div>
+{% endblock login %}
+
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script>
+if (window.location.protocol === "http:") {
+  // unhide http warning
+  var warning = document.getElementById('insecure-login-warning');
+  warning.className = warning.className.replace(/\bhidden\b/, '');
+}
+// setup onSubmit feedback
+$('form').submit((e) => {
+  var form = $(e.target);
+  form.find('.feedback-container>input').attr('disabled', true);
+  form.find('.feedback-container>*').toggleClass('hidden');
+  form.find('.feedback-widget>*').toggleClass('fa-pulse');
+});
+</script>
+{% endblock %}
